@@ -1,6 +1,8 @@
-import { input, select } from "@inquirer/prompts"
+import { input } from "@inquirer/prompts"
 import path from "path"
+import { PersistentStore } from "./PersistentStore"
 import { toKebabCase } from "./changeCase"
+import { promptSelect } from "./promptSelect"
 
 export enum ProgramCommands {
   CreatePersistentStore,
@@ -11,37 +13,32 @@ export enum ProgramCommands {
 export class Program {
   private _appName?: string
   private _appDir?: string
+  private persistentStores: PersistentStore[]
+
+  constructor() {
+    this.persistentStores = []
+  }
 
   public async run() {
     while (true) {
-      const nextCommand = await select({
-        message: "Next action:",
-        choices: [
-          {
-            value: ProgramCommands.CreatePersistentStore,
-            name: "Create Persistent Store",
+      await promptSelect("Next action:", [
+        {
+          name: "Create Persistent Store",
+          cb: async () => {
+            const ps = await PersistentStore.promptCreate()
+            this.persistentStores.push(ps)
+            await ps.promptUpdate()
           },
-          {
-            value: ProgramCommands.CreateRelationalService,
-            name: "Create Relational Service",
-          },
-          {
-            value: ProgramCommands.CreateAccessGate,
-            name: "Create Access Gate",
-          },
-        ],
-      })
-      switch (nextCommand) {
-        case ProgramCommands.CreatePersistentStore:
-          console.log("Create store...")
-          break
-        case ProgramCommands.CreateRelationalService:
-          console.log("Create service...")
-          break
-        case ProgramCommands.CreateAccessGate:
-          console.log("Create gate...")
-          break
-      }
+        },
+        {
+          name: "Create Relational Service",
+          cb: async () => {},
+        },
+        {
+          name: "Create Access Gate",
+          cb: async () => {},
+        },
+      ])
     }
   }
 
