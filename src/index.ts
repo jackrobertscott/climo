@@ -1,1 +1,3 @@
-console.log("Hello, World!")
+import { Program } from "./Program"
+
+new Program().start()
