@@ -1,3 +1,3 @@
 import { Program } from "./Program"
 
-new Program().start()
+new Program().run()
