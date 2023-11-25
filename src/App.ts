@@ -22,14 +22,5 @@ export class App {
   public async addStore() {
     const ps = await PersistentStore.create()
     this.stores.push(ps)
-    await ps.run()
-  }
-
-  public async getName(): Promise<string> {
-    return this.name
-  }
-
-  public async getDir(): Promise<string> {
-    return this.dir
   }
 }

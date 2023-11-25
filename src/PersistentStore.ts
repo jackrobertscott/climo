@@ -17,31 +17,8 @@ export class PersistentStore {
     return new PersistentStore(name, {})
   }
 
-  public async run() {
-    let running = true
-    while (running) {
-      await Prompt.choice("Select:", [
-        {
-          name: "Go back",
-          cb: async () => {
-            running = false
-          },
-        },
-        {
-          name: "Update name",
-          cb: async () => {
-            this.name = await Prompt.input("Store name:")
-            console.log("Name updated!")
-          },
-        },
-        {
-          name: "Add field",
-          cb: async () => {
-            console.log("Todo")
-          },
-        },
-      ])
-    }
+  public async promptSetName() {
+    this.name = await Prompt.input("Store name:")
   }
 
   public addField(key: string, schema: Schema<any>) {
