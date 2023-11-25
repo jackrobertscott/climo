@@ -1,3 +1,3 @@
 import { Program } from "./Program"
 
-new Program().run()
+Program.create().then((program) => program.run())

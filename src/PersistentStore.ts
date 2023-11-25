@@ -1,6 +1,5 @@
-import { input } from "@inquirer/prompts"
+import { Prompt } from "./Prompt"
 import { Schema } from "./Schema"
-import { promptSelect } from "./promptSelect"
 
 export interface PersistentStoreValue {}
 
@@ -13,21 +12,15 @@ export class PersistentStore {
     this.fields = fields
   }
 
-  public static async promptCreate() {
-    const name = await PersistentStore.promptName()
+  public static async create() {
+    const name = await Prompt.input("Store name:")
     return new PersistentStore(name, {})
   }
 
-  private static async promptName() {
-    let name = await input({ message: "Persistent store name:" })
-    name = name.trim()
-    return name
-  }
-
-  public async promptUpdate() {
+  public async run() {
     let running = true
     while (running) {
-      await promptSelect("Select an action:", [
+      await Prompt.choice("Select:", [
         {
           name: "Go back",
           cb: async () => {
@@ -37,7 +30,7 @@ export class PersistentStore {
         {
           name: "Update name",
           cb: async () => {
-            this.name = await PersistentStore.promptName()
+            this.name = await Prompt.input("Store name:")
             console.log("Name updated!")
           },
         },

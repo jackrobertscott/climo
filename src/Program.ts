@@ -1,8 +1,5 @@
-import { input } from "@inquirer/prompts"
-import path from "path"
-import { PersistentStore } from "./PersistentStore"
-import { toKebabCase } from "./changeCase"
-import { promptSelect } from "./promptSelect"
+import { App } from "./App"
+import { Prompt } from "./Prompt"
 
 export enum ProgramCommands {
   CreatePersistentStore,
@@ -11,24 +8,18 @@ export enum ProgramCommands {
 }
 
 export class Program {
-  private _appName?: string
-  private _appDir?: string
-  private persistentStores: PersistentStore[]
+  constructor(private app: App) {}
 
-  constructor() {
-    this.persistentStores = []
+  public static async create() {
+    return new Program(await App.create())
   }
 
   public async run() {
     while (true) {
-      await promptSelect("Next action:", [
+      await Prompt.choice("Next action:", [
         {
           name: "Create Persistent Store",
-          cb: async () => {
-            const ps = await PersistentStore.promptCreate()
-            this.persistentStores.push(ps)
-            await ps.promptUpdate()
-          },
+          cb: (): Promise<void> => this.app.addStore(),
         },
         {
           name: "Create Relational Service",
@@ -40,25 +31,5 @@ export class Program {
         },
       ])
     }
-  }
-
-  private async getAppName(): Promise<string> {
-    if (!this._appName) {
-      const name = await input({ message: "App name:" })
-      this._appName = name.trim()
-    }
-    return this._appName
-  }
-
-  private async getAppDir(): Promise<string> {
-    if (!this._appDir) {
-      const dirName = toKebabCase(await this.getAppName())
-      const inputDir = await input({
-        message: "App folder:",
-        default: `./${dirName}`,
-      })
-      this._appDir = path.resolve(process.cwd(), inputDir.trim())
-    }
-    return this._appDir
   }
 }
